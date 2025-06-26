@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}交易记录{% endblock %}
+
+{% block content %}
+    <h1>交易记录</h1>
+    
+    <div class="filters">
+        <form method="get" action="{{ url_for('transactions') }}">
+            <select name="type">
+                <option value="">所有类型</option>
+                <option value="income" {% if request.args.get('type') == 'income' %}selected{% endif %}>收入</option>
+                <option value="expense" {% if request.args.get('type') == 'expense' %}selected{% endif %}>支出</option>
+            </select>
+            <input type="date" name="start_date" value="{{ request.args.get('start_date') }}">
+            <input type="date" name="end_date" value="{{ request.args.get('end_date') }}">
+            <button type="submit">筛选</button>
+        </form>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>日期</th>
+                <th>金额</th>
+                <th>类型</th>
+                <th>分类</th>
+                <th>描述</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions.items %}
+                <tr>
+                    <td>{{ transaction.date.strftime('%Y-%m-%d') }}</td>
+                    <td class="{{ transaction.type }}">
+                        {{ "%.2f"|format(transaction.amount) }} {{ config.CURRENCY }}
+                    </td>
+                    <td>{{ '收入' if transaction.type == 'income' else '支出' }}</td>
+                    <td>{{ transaction.category.name if transaction.category else '无' }}</td>
+                    <td>{{ transaction.description }}</td>
+                    <td>
+                        <a href="#" class="btn-sm">编辑</a>
+                        <a href="#" class="btn-sm btn-danger">删除</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="pagination">
+        {% if transactions.has_prev %}
+            <a href="{{ url_for('transactions', page=transactions.prev_num) }}">上一页</a>
+        {% endif %}
+        
+        {% for page_num in transactions.iter_pages() %}
+            {% if page_num %}
+                {% if transactions.page == page_num %}
+                    <span class="current">{{ page_num }}</span>
+                {% else %}
+                    <a href="{{ url_for('transactions', page=page_num) }}">{{ page_num }}</a>
+                {% endif %}
+            {% else %}
+                <span>...</span>
+            {% endif %}
+        {% endfor %}
+        
+        {% if transactions.has_next %}
+            <a href="{{ url_for('transactions', page=transactions.next_num) }}">下一页</a>
+        {% endif %}
+    </div>
+    
+    <div class="actions">
+        <a href="{{ url_for('add_transaction') }}" class="btn">添加交易</a>
+    </div>
+{% endblock %}

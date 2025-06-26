@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}分类管理{% endblock %}
+
+{% block content %}
+    <h1>分类管理</h1>
+    
+    <div class="category-sections">
+        <div class="category-section">
+            <h2>收入分类</h2>
+            <ul>
+                {% for category in income_categories %}
+                    <li>
+                        {{ category.name }}
+                        <a href="{{ url_for('delete_category', id=category.id) }}" 
+                           class="btn-sm btn-danger"
+                           onclick="return confirm('确定要删除此分类吗？')">删除</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div class="category-section">
+            <h2>支出分类</h2>
+            <ul>
+                {% for category in expense_categories %}
+                    <li>
+                        {{ category.name }}
+                        <a href="{{ url_for('delete_category', id=category.id) }}" 
+                           class="btn-sm btn-danger"
+                           onclick="return confirm('确定要删除此分类吗？')">删除</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
+    <h2>添加新分类</h2>
+    <form method="post" action="{{ url_for('add_category') }}">
+        <div class="form-group">
+            <label for="name">分类名称</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="type">分类类型</label>
+            <select id="type" name="type" required>
+                <option value="income">收入</option>
+                <option value="expense">支出</option>
+            </select>
+        </div>
+        <button type="submit" class="btn">添加分类</button>
+    </form>
+{% endblock %}

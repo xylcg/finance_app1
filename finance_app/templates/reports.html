@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}报表统计{% endblock %}
+
+{% block content %}
+    <h1>报表统计</h1>
+    
+    <div class="report-section">
+        <h2>支出分类统计</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>分类</th>
+                    <th>金额</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category, amount in expense_by_category %}
+                    <tr>
+                        <td>{{ category }}</td>
+                        <td class="expense">{{ "%.2f"|format(amount) }} {{ config.CURRENCY }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="report-section">
+        <h2>月度收支统计</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>月份</th>
+                    <th>收入</th>
+                    <th>支出</th>
+                    <th>结余</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for month in monthly_stats %}
+                    <tr>
+                        <td>{{ month.month }}</td>
+                        <td class="income">{{ "%.2f"|format(month.income) }} {{ config.CURRENCY }}</td>
+                        <td class="expense">{{ "%.2f"|format(month.expense) }} {{ config.CURRENCY }}</td>
+                        <td class="{{ 'income' if (month.income - month.expense) > 0 else 'expense' }}">
+                            {{ "%.2f"|format(month.income - month.expense) }} {{ config.CURRENCY }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

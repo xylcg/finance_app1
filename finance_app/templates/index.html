@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>欢迎, {{ current_user.username }}!</h1>
+    
+    <div class="stats">
+        <div class="stat-card">
+            <h3>总收入</h3>
+            <p class="income">{{ "%.2f"|format(total_income) }} {{ config.CURRENCY }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>总支出</h3>
+            <p class="expense">{{ "%.2f"|format(total_expense) }} {{ config.CURRENCY }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>余额</h3>
+            <p class="balance">{{ "%.2f"|format(balance) }} {{ config.CURRENCY }}</p>
+        </div>
+    </div>
+    
+    <h2>最近交易</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>日期</th>
+                <th>金额</th>
+                <th>类型</th>
+                <th>分类</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in recent_transactions %}
+                <tr>
+                    <td>{{ transaction.date.strftime('%Y-%m-%d') }}</td>
+                    <td class="{{ transaction.type }}">
+                        {{ "%.2f"|format(transaction.amount) }} {{ config.CURRENCY }}
+                    </td>
+                    <td>{{ '收入' if transaction.type == 'income' else '支出' }}</td>
+                    <td>{{ transaction.category.name if transaction.category else '无' }}</td>
+                    <td>{{ transaction.description }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="actions">
+        <a href="{{ url_for('add_transaction') }}" class="btn">添加交易</a>
+    </div>
+{% endblock %}
